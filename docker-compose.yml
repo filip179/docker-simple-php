@@ -2,15 +2,14 @@ version: "2"
 services:
   proxy:
     image: jwilder/nginx-proxy
-    container_name: snow-dog-proxy
+    container_name: michal-proxy
     ports:
-    - "80:80"
+      - "8080:80"
     volumes:
-    - /var/run/docker.sock:/tmp/docker.sock:ro
-    logging:
-      driver: "json-file"
-  sapms:
-    build: ./docker/sapms
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  php_app:
+    container_name: michal-app
+    build: ./docker/php_app
     environment:
       - VIRTUAL_HOST=php_app.lvh.me
     logging:
@@ -20,8 +19,13 @@ services:
       - ./docker/php_app/sites-enabled:/etc/apache2/sites-enabled
       - ~/.ssh:/root/.ssh0
   mysql:
+    container_name: michal-mysql
     image: mysql:5.7
     ports:
-    - 3308:3306
+      - 3308:3306
     environment:
-    - VIRTUAL_HOST= mysql.lvh.me
+      - VIRTUAL_HOST= mysql.lvh.me
+      - MYSQL_ROOT_PASSWORD=rootsecret
+      - MYSQL_PASSWORD=rootsecret
+      - MYSQL_USER=root
+      - MYSQL_DATABASE=ebdb
