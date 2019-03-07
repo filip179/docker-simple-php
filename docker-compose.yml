@@ -1,0 +1,25 @@
+version: "2"
+services:
+  proxy:
+    image: jwilder/nginx-proxy
+    container_name: snow-dog-proxy
+    ports:
+    - "80:80"
+    volumes:
+    - /var/run/docker.sock:/tmp/docker.sock:ro
+    logging:
+      driver: "json-file"
+  sapms:
+    build: ./docker/sapms
+    environment:
+      - VIRTUAL_HOST=php_app.lvh.me
+    logging:
+      driver: "json-file"
+    volumes:
+      - ${PHP_APP}:/var/www/html
+      - ./docker/php_app/sites-enabled:/etc/apache2/sites-enabled
+      - ~/.ssh:/root/.ssh0
+  mysql:
+    image: mysql:5.7
+    ports:
+    - 3308:3306
